@@ -3,7 +3,7 @@ import Head from 'next/head'
 import { Upload, Download, TrendingUp, Zap, Loader } from 'lucide-react'
 
 export default function Home() {
-  const API_KEY = process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY || 'REMOVED
+  const API_KEY = process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY || ''
   
   const [activeTab, setActiveTab] = useState('log')
   const [workoutHistory, setWorkoutHistory] = useState<any[]>([])
