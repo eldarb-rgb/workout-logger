@@ -3,7 +3,7 @@ import Head from 'next/head'
 import { Upload, Download, TrendingUp, Zap, Loader } from 'lucide-react'
 
 export default function Home() {
-  const API_KEY = process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY || ''
+  
   
   const [activeTab, setActiveTab] = useState('log')
   const [workoutHistory, setWorkoutHistory] = useState<any[]>([])
@@ -40,58 +40,18 @@ export default function Home() {
 
   const callClaudeAPI = async (prompt: string, imageData: string | null = null) => {
     try {
-      const messages = [
-        {
-          role: 'user' as const,
-          content: imageData
-            ? [
-                {
-                  type: 'image' as const,
-                  source: {
-                    type: 'base64' as const,
-                    media_type: 'image/jpeg' as const,
-                    data: imageData.split(',')[1]
-                  }
-                },
-                {
-                  type: 'text' as const,
-                  text: prompt
-                }
-              ]
-            : [
-                {
-                  type: 'text' as const,
-                  text: prompt
-                }
-              ]
-        }
-      ]
-
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
+      const res = await fetch('/api/coach', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': API_KEY,
-          'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
-          model: 'claude-opus-4-5-20251101',
-          max_tokens: 500,
-          messages: messages
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error(`API error: ${response.statusText}`)
-      }
-
-      const data = await response.json()
-      return data.content[0].text
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, imageData }),
+      });
+      const data = await res.json();
+      return data.text || 'No feedback received.';
     } catch (error) {
-      console.error('API Error:', error)
-      return 'Unable to get feedback. Please check your API key.'
+      console.error('API Error:', error);
+      return 'Unable to get feedback. Please try again.';
     }
-  }
+  };
 
   const handleLogSubmit = async () => {
     if (!logInput.trim()) return
@@ -182,7 +142,7 @@ Give SHORT coaching feedback (2-3 sentences). Be direct but encouraging. Include
           <h1 className="text-4xl font-bold tracking-tight mb-2">
             Workout Log
           </h1>
-          <p className="text-slate-400">Week of {new Date().toLocaleDateString()}</p>
+          <p className="text-slate-400">Week of {typeof window !== 'undefined' ? new Date().toLocaleDateString() : ''}</p>
         </div>
 
         {/* Tabs */}
@@ -256,7 +216,7 @@ Give SHORT coaching feedback (2-3 sentences). Be direct but encouraging. Include
                 {isCardioDay ? 'Log Cardio Session' : 'Log Lifts'}
               </label>
 
-              {isCardioDay && (
+            
                 <div className="mb-4">
                   <button
                     onClick={() => fileInputRef.current?.click()}
@@ -278,7 +238,7 @@ Give SHORT coaching feedback (2-3 sentences). Be direct but encouraging. Include
                     </div>
                   )}
                 </div>
-              )}
+            
 
               <textarea
                 value={logInput}
