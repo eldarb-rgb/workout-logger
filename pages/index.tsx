@@ -1,7 +1,11 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import Head from 'next/head'
 import { Upload, Download, TrendingUp, Zap, Loader } from 'lucide-react'
-
+import { createClient } from '@supabase/supabase-js'
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 export default function Home() {
   
   
@@ -11,6 +15,20 @@ export default function Home() {
   const [logInput, setLogInput] = useState('')
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [loadingHistory, setLoadingHistory] = useState(true)
+
+useEffect(() => {
+  loadWorkouts()
+}, [])
+
+const loadWorkouts = async () => {
+  const { data } = await supabase
+    .from('workout_logs')
+    .select('*')
+    .order('created_at', { ascending: false })
+  if (data) setWorkoutHistory(data)
+  setLoadingHistory(false)
+}
   const [feedback, setFeedback] = useState('')
   const [showFeedback, setShowFeedback] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -93,26 +111,27 @@ Give SHORT coaching feedback (2-3 sentences). Be direct but encouraging. Include
     const coachFeedback = await callClaudeAPI(prompt, imageData)
 
     const newEntry = {
-      date: new Date().toLocaleDateString(),
-      day: currentDay,
-      notes: logInput,
-      feedback: coachFeedback,
-      isCardio: isCardioDay
-    }
+  date: new Date().toLocaleDateString(),
+  day: currentDay,
+  notes: logInput,
+  feedback: coachFeedback,
+  is_cardio: isCardioDay
+}
 
-    setWorkoutHistory([...workoutHistory, newEntry])
-    setFeedback(coachFeedback)
-    setShowFeedback(true)
-    setLogInput('')
-    setImagePreview(null)
-    setLoading(false)
+await supabase.from('workout_logs').insert([newEntry])
+await loadWorkouts()
+setFeedback(coachFeedback)
+setShowFeedback(true)
+setLogInput('')
+setImagePreview(null)
+setLoading(false)
   }
 
   const handleExportCSV = () => {
     let csvContent = 'Date,Day,Type,Notes,Feedback\n'
 
     workoutHistory.forEach((entry) => {
-      const type = entry.isCardio ? 'Cardio' : 'Strength'
+      const type = entry.is_cardio ? 'Cardio' : 'Strength'
       const notes = entry.notes.replace(/,/g, ';').replace(/\n/g, ' ')
       const feedbackText = entry.feedback.replace(/,/g, ';').replace(/\n/g, ' ')
       csvContent += `"${entry.date}","${entry.day}","${type}","${notes}","${feedbackText}"\n`
@@ -142,7 +161,7 @@ Give SHORT coaching feedback (2-3 sentences). Be direct but encouraging. Include
           <h1 className="text-4xl font-bold tracking-tight mb-2">
             Workout Log
           </h1>
-          <p className="text-slate-400">Week of {typeof window !== 'undefined' ? new Date().toLocaleDateString() : ''}</p>
+         <p className="text-slate-400">Workout Logger 2026</p>
         </div>
 
         {/* Tabs */}
