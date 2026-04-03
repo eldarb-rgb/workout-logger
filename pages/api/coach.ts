@@ -19,9 +19,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       type: 'image',
       source: {
         type: 'base64',
-        media_type: 'image/jpeg',
-        data: imageData.split(',')[1],
-      },
+        media_type: imageData.split(';')[0].split(':')[1] as any,
+  data: imageData.split(',')[1],
+},
     });
   }
 
