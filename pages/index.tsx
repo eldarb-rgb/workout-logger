@@ -292,7 +292,7 @@ setLoading(false)
                 <h3 className="font-bold text-lg mb-2 text-green-300">
                   {isCardioDay ? '🏃 Inigo Says:' : '💪 Coach Rippetoe Says:'}
                 </h3>
-                <p className="text-green-100 text-sm leading-relaxed">{feedback}</p>
+                <p className="text-green-100 text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: feedback.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>') }} />
               </div>
             )}
 
@@ -311,7 +311,7 @@ setLoading(false)
                         <span className="text-xs text-slate-400">{entry.is_cardio ? 'Cardio' : 'Strength'}</span>
                       </div>
                       <p className="text-slate-300 text-xs mb-1">{entry.notes}</p>
-                      <p className="text-green-300 text-xs italic">{entry.feedback}</p>
+                      <p className="text-green-300 text-xs italic" dangerouslySetInnerHTML={{ __html: entry.feedback.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>') }} />
                     </div>
                   ))}
                 </div>
