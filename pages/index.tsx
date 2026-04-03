@@ -304,7 +304,7 @@ setLoading(false)
                   Recent Logs ({workoutHistory.length})
                 </h3>
                 <div className="space-y-3 max-h-60 overflow-y-auto">
-                  {[...workoutHistory].reverse().map((entry, idx) => (
+                  {[...workoutHistory].map((entry, idx) => (
                     <div key={idx} className="bg-slate-700 p-3 rounded border-l-2 border-blue-400">
                       <div className="flex justify-between items-start mb-1">
                         <span className="font-semibold text-blue-400 text-sm">{entry.day} ({entry.date})</span>
