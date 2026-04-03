@@ -109,7 +109,7 @@ Give SHORT coaching feedback (2-3 sentences). Be direct but encouraging. Include
     }
 
     const coachFeedback = await callClaudeAPI(prompt, imageData)
-
+    console.log('isCardioDay:', isCardioDay, 'currentDay:', currentDay)
     const newEntry = {
   date: new Date().toLocaleDateString(),
   day: currentDay,
@@ -308,7 +308,7 @@ setLoading(false)
                     <div key={idx} className="bg-slate-700 p-3 rounded border-l-2 border-blue-400">
                       <div className="flex justify-between items-start mb-1">
                         <span className="font-semibold text-blue-400 text-sm">{entry.day} ({entry.date})</span>
-                        <span className="text-xs text-slate-400">{entry.isCardio ? 'Cardio' : 'Strength'}</span>
+                        <span className="text-xs text-slate-400">{entry.is_cardio ? 'Cardio' : 'Strength'}</span>
                       </div>
                       <p className="text-slate-300 text-xs mb-1">{entry.notes}</p>
                       <p className="text-green-300 text-xs italic">{entry.feedback}</p>
