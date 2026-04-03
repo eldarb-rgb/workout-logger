@@ -43,7 +43,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     const data = await response.json();
-    res.status(200).json({ text: data.content[0].text });
+    if (data.error) {
+  console.error('Anthropic API error:', data.error);
+  return res.status(500).json({ error: data.error.message });
+}
+res.status(200).json({ text: data.content[0].text });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Coach feedback failed' });
